@@ -24,14 +24,29 @@ define([
 			// Render Map
 			var element = this.$el.find('.map-canvas').get(0);
 
-			var default_location = new google.maps.LatLng(43.073, -89.4012);
+			var default_location = new google.maps.LatLng(42.2767097, -83.7375668);
 			var map_options = {
-				zoom: 8,
+				zoom: 16,
 				center: default_location
 			};
 
 			var map      = new google.maps.Map(element, map_options);
 			var boundary = new google.maps.LatLngBounds();
+
+			// MGOV-7 - add current position of user
+			// if cannot handle or does not allow, default to Central Campus, centered on DIAG
+      navigator.geolocation.getCurrentPosition(function(position) {
+          var geolocate = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+          var infowindow = new google.maps.InfoWindow({
+              map: map,
+              position: geolocate,
+              content:
+                    '<p>You are here:</>' +
+                    '<p>Latitude: ' + position.coords.latitude + '</p>' +
+                    '<p>Longitude: ' + position.coords.longitude + '</p>'
+          });            
+          map.setCenter(geolocate);
+      });
 
 			_.each(this.collection.models, function(trigger) {
 				// Add Trigger Location to map
